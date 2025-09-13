@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<title>Turnero CEIP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+<style>
+  html, body {
+    margin:0;
+    padding:0;
+    height:100%;
+    overflow:hidden; /* 🚫 elimina barras de desplazamiento */
+  }
+
+  body {
+    font-family:Arial;
+    background: radial-gradient(1100px 520px at 50% -10%, rgba(0,194,255,.16), transparent 55%),
+                radial-gradient(900px 460px at 10% 100%, rgba(13,110,253,.18), transparent 55%),
+                #fff;
+  }
+  .header { text-align:center; padding:20px; }
+  .header img { height: clamp(120px, 22vh, 260px); }
+  .header-control img { height:100px; }
+
+  .main { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:30px; }
+
+  .modulo-main { gap: 10px; padding-top: 10px; }
+
+  .button {
+    padding:10px 20px; font-size:16px; border:none; border-radius:6px;
+    cursor:pointer; font-weight:bold;
+    box-shadow:0 3px 6px rgba(0,0,0,0.2); transition:all 0.2s ease;
+  }
+  .button:hover { transform:scale(1.05); }
+
+  .button.primary { background:#003688; color:#fff; }
+  .button.primary:hover { background:#002d6d; }
+  .button.call { background:#28a745; color:#fff; }
+  .button.call:hover { background:#1e7e34; }
+  .button.finish { background:#d32f2f; color:#fff; }
+  .button.finish:hover { background:#9a0007; }
+
+  .module-card {
+    background: linear-gradient(180deg, #004aad 0%, #002d6d 100%);
+    color:#fff; font-size:22px; font-weight:bold; text-align:center;
+    padding:28px 36px; border-radius:12px; min-width:220px;
+    box-shadow:0 6px 12px rgba(0,0,0,0.25);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+
+  .control-card {
+    background: linear-gradient(180deg, #004aad 0%, #002d6d 100%);
+    color:#fff; font-size:15px; font-weight:bold; text-align:center;
+    padding:12px 18px; border-radius:8px; min-width:140px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.2);
+    text-shadow:0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  .flash { animation:flash .28s ease }
+  @keyframes flash { 0%{transform:scale(1.06);} 100%{transform:scale(1);} }
+</style>
+</head>
+<body>
+
+<script>
+/* === Configuración Firebase === */
+const firebaseConfig = {
+  apiKey: "AIzaSyC7FPQizEpJwOhCY-mgpZj2b5lf2Yx_y1c",
+  authDomain: "turneroceip-99730.firebaseapp.com",
+  databaseURL: "https://turneroceip-99730-default-rtdb.firebaseio.com",
+  projectId: "turneroceip-99730",
+  messagingSenderId: "1001292756879",
+  appId: "1:1001292756879:web:336d780aa121b601e5bdfa"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+/* ======= HOME ======= */
+if(location.hash==="" || location.hash==="#home"){
+  document.body.innerHTML = `
+    <div class="header">
+      <img src="https://i.ibb.co/Y49Gn8wW/logo-CEIP-2025-07.png" alt="Logo CEIP">
+    </div>
+    <div class="main">
+      <h1 style="color:#003688;">Turnero</h1>
+      <div>
+        <button class="button primary" onclick="openDisplay()">Abrir DISPLAY</button>
+        <button class="button primary" onclick="window.open(location.href+'#control','CONTROL','width=900,height=700')">Abrir CONTROL</button>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:20px;">
+        ${[1,2,3,4,5,6,7,8].map(i=>`
+          <button class="button primary" onclick="openModulo(${i})">Módulo ${i}</button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+function openDisplay(){ window.open(location.href+'#display','DISPLAY','width=1200,height=800'); }
+function openModulo(id){ window.open(location.href+'#modulo?id='+id,'MOD'+id,'width=520,height=420'); }
+
+/* ======= DISPLAY ======= */
+if(location.hash==="#display"){
+  document.body.innerHTML = `
+    <div class="header"><img src="https://i.ibb.co/Y49Gn8wW/logo-CEIP-2025-07.png"></div>
+  <div style="flex:1; display:flex; flex-direction:row; justify-content:space-between; align-items:flex-start; padding:180px 20px; height:100%;">
+
+
+      <div id="col1" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;"></div>
+      <div style="flex:1; text-align:center;">
+        <div style="font-size:72px; font-weight:bold; color:#003688; margin-bottom:30px;">Llamando al Número</div>
+        <div id="numero" class="central-number" style="font-size:300px; font-weight:bold;
+          background: linear-gradient(180deg, #0055cc 0%, #002d6d 100%);
+          -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+          text-shadow:0 8px 20px rgba(0,0,0,0.35);">0</div>
+      </div>
+      <div id="col2" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;"></div>
+    </div>
+  `;
+  const numEl=document.getElementById("numero");
+  const col1=document.getElementById("col1");
+  const col2=document.getElementById("col2");
+
+  db.ref("turnero/number").on("value", snap=>{
+    numEl.textContent = snap.val()||0;
+    numEl.classList.remove("flash"); void numEl.offsetWidth; numEl.classList.add("flash");
+  });
+  db.ref("turnero/modules").on("value", snap=>{
+    col1.innerHTML=""; col2.innerHTML="";
+    const mods=snap.val()||{};
+    Object.values(mods).forEach((m,idx)=>{
+      const card=document.createElement("div");
+      card.className="module-card";
+      card.style.background = m.estado==="Disponible"
+        ? "linear-gradient(180deg, #004aad 0%, #002d6d 100%)"
+        : "linear-gradient(180deg, #d32f2f 0%, #8b0000 100%)";
+      card.innerHTML = `<div>${m.nombre}</div><div>${m.estado}</div>`;
+      if(m.atendiendo){
+        card.innerHTML += `<div style="font-size:20px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
+      }
+      if(idx < 4){ col1.appendChild(card); } else { col2.appendChild(card); }
+    });
+  });
+}
+
+/* ======= MODULO ======= */
+if(location.hash.startsWith("#modulo")){
+  const id = location.hash.split("=")[1]||"1";
+  document.body.innerHTML = `
+    <div class="header"><img src="https://i.ibb.co/Y49Gn8wW/logo-CEIP-2025-07.png"></div>
+    <div class="main modulo-main">
+      <h1 style="color:#003688; font-size:26px; margin:10px 0;">Módulo ${id}</h1>
+      <div id="box" class="module-card" style="min-width:280px;"></div>
+    </div>
+  `;
+  const box=document.getElementById("box");
+  function render(mod){
+    if(!mod || mod.estado==="Disponible"){
+      box.innerHTML=`Disponible<br><br><button class="button call" id="call">Llamar siguiente</button>`;
+      document.getElementById("call").onclick=()=>{
+        db.ref("turnero/number").transaction(n=>(n||0)+1, (err,ok,snap)=>{
+          const turno = snap.val();
+          db.ref("turnero/modules/"+id).set({ id, nombre:"Módulo "+id, estado:"Ocupado", atendiendo:turno });
+        });
+      };
+    } else {
+      box.innerHTML=`Atendiendo N° ${mod.atendiendo}<br><br><button class="button finish" id="finish">Finalizar</button>`;
+      document.getElementById("finish").onclick=()=>{
+        db.ref("turnero/modules/"+id).set({ id, nombre:"Módulo "+id, estado:"Disponible", atendiendo:null });
+      };
+    }
+  }
+  db.ref("turnero/modules/"+id).on("value", snap=>render(snap.val()));
+}
+
+/* ======= CONTROL ======= */
+if(location.hash==="#control"){
+  document.body.innerHTML = `
+    <div class="header header-control"><img src="https://i.ibb.co/Y49Gn8wW/logo-CEIP-2025-07.png"></div>
+    <div class="main">
+      <h1 style="color:#003688;">Módulo de Control</h1>
+      <p style="font-size:16px;">Llamando al número: <span id="currentNum">0</span></p>
+      <div>
+        <button class="button primary" id="resetBtn">Resetear a 0</button>
+      </div>
+      <div>
+        <input id="newNum" type="number" placeholder="Nuevo número" style="padding:6px; font-size:14px; width:120px; text-align:center;">
+        <button class="button primary" id="setBtn">Cambiar Secuencia</button>
+      </div>
+      <h2 style="color:#003688; font-size:18px;">Estado de módulos</h2>
+      <div id="modulesList" style="display:flex; flex-wrap:wrap; justify-content:center; gap:6px;"></div>
+    </div>
+  `;
+
+  const currentNumEl = document.getElementById("currentNum");
+  const resetBtn = document.getElementById("resetBtn");
+  const setBtn = document.getElementById("setBtn");
+  const newNumInput = document.getElementById("newNum");
+  const modulesList = document.getElementById("modulesList");
+
+  db.ref("turnero/number").on("value", snap=>{
+    currentNumEl.textContent = snap.val()||0;
+  });
+
+  resetBtn.onclick = ()=>{
+    if(confirm("¿Seguro que quieres resetear todo a 0 y liberar módulos?")){
+      db.ref("turnero/number").set(0);
+      db.ref("turnero/modules").once("value").then(snap=>{
+        const mods = snap.val() || {};
+        Object.keys(mods).forEach(id=>{
+          db.ref("turnero/modules/"+id).set({ id, nombre:"Módulo "+id, estado:"Disponible", atendiendo:null });
+        });
+      });
+    }
+  };
+
+  setBtn.onclick = ()=>{
+    const val = parseInt(newNumInput.value);
+    if(!isNaN(val)){
+      db.ref("turnero/number").set(val);
+      newNumInput.value="";
+    } else {
+      alert("Ingresa un número válido");
+    }
+  };
+
+  db.ref("turnero/modules").on("value", snap=>{
+    modulesList.innerHTML="";
+    const mods=snap.val()||{};
+    Object.values(mods).forEach(m=>{
+      const div=document.createElement("div");
+      div.className="control-card";
+      div.style.background = m.estado==="Disponible"
+        ? "linear-gradient(180deg, #004aad 0%, #002d6d 100%)"
+        : "linear-gradient(180deg, #d32f2f 0%, #8b0000 100%)";
+      div.innerHTML = `<b>${m.nombre}</b><br>${m.estado}${m.atendiendo ? `<br>Atendiendo N° ${m.atendiendo}`:""}`;
+      modulesList.appendChild(div);
+    });
+  });
+}
+</script>
+</body>
+</html>
