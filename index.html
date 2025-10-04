@@ -48,8 +48,8 @@
 
   .module-card {
     background: linear-gradient(180deg, #004aad 0%, #002d6d 100%);
-    color:#fff; font-size:22px; font-weight:bold; text-align:center;
-    padding:28px 36px; border-radius:12px; min-width:220px;
+    color:#fff; font-size:30px; font-weight:bold; text-align:center;
+    padding:38px 48px; border-radius:12px; min-width:260px;
     box-shadow:0 6px 12px rgba(0,0,0,0.25);
     text-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
@@ -141,7 +141,7 @@ if(location.hash==="#display"){
         : "linear-gradient(180deg, #d32f2f 0%, #8b0000 100%)";
       card.innerHTML = `<div>${m.nombre}</div><div>${m.estado}</div>`;
       if(m.atendiendo){
-        card.innerHTML += `<div style="font-size:20px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
+        card.innerHTML += `<div style="font-size:29px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
       }
       if(idx < 4){ col1.appendChild(card); } else { col2.appendChild(card); }
     });
