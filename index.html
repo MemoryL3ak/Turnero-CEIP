@@ -141,7 +141,8 @@ if(location.hash==="#display"){
         : "linear-gradient(180deg, #d32f2f 0%, #8b0000 100%)";
       card.innerHTML = `<div>${m.nombre}</div><div>${m.estado}</div>`;
       if(m.atendiendo){
-        card.innerHTML += `<div style="font-size:29px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
+   /* TEXTO ATENDIENDO A */
+     card.innerHTML += `<div style="font-size:29px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
       }
       if(idx < 4){ col1.appendChild(card); } else { col2.appendChild(card); }
     });
