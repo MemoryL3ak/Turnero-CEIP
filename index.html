@@ -46,9 +46,11 @@
   .button.finish { background:#d32f2f; color:#fff; }
   .button.finish:hover { background:#9a0007; }
 
+
+  /*Modificar texto modulo */
   .module-card {
     background: linear-gradient(180deg, #004aad 0%, #002d6d 100%);
-    color:#fff; font-size:30px; font-weight:bold; text-align:center;
+    color:#fff; font-size:40px; font-weight:bold; text-align:center;
     padding:38px 48px; border-radius:12px; min-width:260px;
     box-shadow:0 6px 12px rgba(0,0,0,0.25);
     text-shadow: 0 1px 3px rgba(0,0,0,0.3);
@@ -105,22 +107,30 @@ function openDisplay(){ window.open(location.href+'#display','DISPLAY','width=12
 function openModulo(id){ window.open(location.href+'#modulo?id='+id,'MOD'+id,'width=520,height=420'); }
 
 /* ======= DISPLAY ======= */
+/* ======= MODIFICAR TEXTO LLAMANDO AL NÚMERO ======= */
+
 if(location.hash==="#display"){
   document.body.innerHTML = `
-    <div class="header"><img src="https://i.ibb.co/Y49Gn8wW/logo-CEIP-2025-07.png"></div>
-  <div style="flex:1; display:flex; flex-direction:row; justify-content:space-between; align-items:flex-start; padding:180px 20px; height:100%;">
-
-
-      <div id="col1" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;"></div>
-      <div style="flex:1; text-align:center;">
-        <div style="font-size:72px; font-weight:bold; color:#003688; margin-bottom:30px;">Llamando al Número</div>
-        <div id="numero" class="central-number" style="font-size:300px; font-weight:bold;
-          background: linear-gradient(180deg, #0055cc 0%, #002d6d 100%);
-          -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-          text-shadow:0 8px 20px rgba(0,0,0,0.35);">0</div>
-      </div>
-      <div id="col2" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;"></div>
+    
+  <div style="flex:1; display:flex; flex-direction:row; justify-content:space-between; align-items:center; padding:100px 20px; height:100%;">
+  <div id="col1" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;"></div>
+  
+  <div style="flex:1; text-align:center;">
+    <img src="https://i.ibb.co/Y49Gn8wW/logo-CEIP-2025-07.png" 
+         alt="Logo CEIP" 
+         style="height: clamp(150px, 25vh, 280px); margin-bottom:60px;">
+    
+    <div style="font-size:120px; font-weight:bold; color:#003688; margin-bottom:30px;">
+      Llamando al Número
     </div>
+    <div id="numero" class="central-number" style="font-size:300px; font-weight:bold;
+      background: linear-gradient(180deg, #0055cc 0%, #002d6d 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      text-shadow:0 8px 20px rgba(0,0,0,0.35);">0</div>
+  </div>
+
+  <div id="col2" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:40px;"></div>
+</div>
   `;
   const numEl=document.getElementById("numero");
   const col1=document.getElementById("col1");
@@ -142,7 +152,7 @@ if(location.hash==="#display"){
       card.innerHTML = `<div>${m.nombre}</div><div>${m.estado}</div>`;
       if(m.atendiendo){
    /* TEXTO ATENDIENDO A */
-     card.innerHTML += `<div style="font-size:29px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
+     card.innerHTML += `<div style="font-size:40px; margin-top:10px;">Atendiendo N° ${m.atendiendo}</div>`;
       }
       if(idx < 4){ col1.appendChild(card); } else { col2.appendChild(card); }
     });
